@@ -1,4 +1,4 @@
-# Project Based Experiments
+#Project Based Experiments
 ## Objective :
  Build a Multilayer Perceptron (MLP) to classify handwritten digits in python
 ## Steps to follow:
@@ -29,10 +29,10 @@ Visualize the training/validation loss and accuracy over epochs to understand th
 
 # Program:
 ```
-Developed by : Mothesh M
-Reg No : 212221230120
+Developed by: Paul Andrew D
+Register no: 212221230075
 ```
-```python
+```
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -43,9 +43,7 @@ from tensorflow.keras import utils
 import pandas as pd
 from sklearn.metrics import classification_report,confusion_matrix
 from tensorflow.keras.preprocessing import image
-
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
-
 X_train.shape
 X_test.shape
 single_image= X_train[0]
@@ -56,7 +54,6 @@ X_train.min()
 X_train.max()
 X_train_scaled = X_train/255.0
 X_test_scaled = X_test/255.0
-
 X_train_scaled.min()
 X_train_scaled.max()
 y_train[0]
@@ -69,59 +66,39 @@ plt.imshow(single_image,cmap='gray')
 y_train_onehot[500]
 X_train_scaled = X_train_scaled.reshape(-1,28,28,1)
 X_test_scaled = X_test_scaled.reshape(-1,28,28,1)
-
-model = keras.Sequential()
-model.add(layers.Input(shape=(28,28,1)))
-model.add(layers.Conv2D(filters=32,kernel_size=(3,3),activation='relu'))
-model.add(layers.MaxPool2D(pool_size=(2,2)))
-model.add(layers.Flatten())
-model.add(layers.Dense(32,activation='relu'))
-model.add(layers.Dense(64,activation='relu'))
-model.add(layers.Dense(10,activation='softmax'))
-
-model.summary()
-model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
-              metrics='accuracy')
-model.fit(X_train_scaled ,y_train_onehot, epochs=5,
-          batch_size=64,
-          validation_data=(X_test_scaled,y_test_onehot))
-metrics = pd.DataFrame(model.history.history)
-metrics.head()
-metrics[['accuracy','val_accuracy']].plot()
-metrics[['loss','val_loss']].plot()
-x_test_predictions = np.argmax(model.predict(X_test_scaled), axis=1)
-print(confusion_matrix(y_test,x_test_predictions))
-print(classification_report(y_test,x_test_predictions))
-
-img = image.load_img('img6n.png')
+from sklearn.neural_network import MLPClassifier
+mlp = MLPClassifier(hidden_layer_sizes=(100, 100), max_iter=1000, random_state=42)
+X_train_flat = X_train_scaled.reshape(X_train_scaled.shape[0], -1)
+X_test_flat = X_test_scaled.reshape(X_test_scaled.shape[0], -1)
+mlp.fit(X_train_flat, y_train_onehot)
+y_pred = mlp.predict(X_test_flat)
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix,precision_score,f1_score
+precision = precision_score(y_test_onehot, y_pred, average='macro', zero_division=1)
+f1 = f1_score(y_test_onehot, y_pred, average='macro', zero_division=1)
+print(f1)
+print(precision)
+img = image.load_img('imagefive.jpg')
 type(img)
-img = image.load_img('img6n.png')
+img = image.load_img('imagefive.jpg')
 img_tensor = tf.convert_to_tensor(np.asarray(img))
 img_28 = tf.image.resize(img_tensor,(28,28))
 img_28_gray = tf.image.rgb_to_grayscale(img_28)
 img_28_gray_scaled = img_28_gray.numpy()/255.0
-x_single_prediction = np.argmax(
-    model.predict(img_28_gray_scaled.reshape(1,28,28,1)),
-     axis=1)
+img_flat = img_28_gray_scaled.reshape(1, -1)
+x_single_prediction = np.argmax(mlp.predict(img_flat), axis=1)
 print(x_single_prediction)
 plt.imshow(img_28_gray_scaled.reshape(28,28),cmap='gray')
+img_28_gray_inverted = 255.0-img_28_gray
+img_28_gray_inverted_scaled = img_28_gray_inverted.numpy()/255.0
+
 ```
+
 ## Output:
-Training Loss and Validation Loss<br>
-![327992980-6d848c95-1167-42b9-a9f8-bdf8f3c04794](https://github.com/Lavanyajoyce/NN-Project-Based-Experiment/assets/94170892/805b4c15-45c0-480a-ba12-b6b3c22790fd) <br>
-![327993057-360e662e-2f66-4271-a047-3027c4c289c6](https://github.com/Lavanyajoyce/NN-Project-Based-Experiment/assets/94170892/e98ddca1-6e5c-4842-90d8-0ec0c1eb6356)
+### F1 Score
+![](./f1.png)
+### Precision
+![](./precision.png)
+### Prediction
+![](./op.png)
 
-Classification Report <br>
-![327993008-d973efa5-ee07-40da-9f11-0ce064564b32](https://github.com/Lavanyajoyce/NN-Project-Based-Experiment/assets/94170892/25d0c207-623a-4db2-977e-b1679f097cf5) <br>
 
-Confusion Matrix <br>
-![327993044-8cedea82-b52c-4d37-ad74-ae7762403871](https://github.com/Lavanyajoyce/NN-Project-Based-Experiment/assets/94170892/dda3e3ef-18f4-4993-92d5-c494632bd615) <br>
-
-New Sample Data Prediction <br>
- ![327993076-45e03729-f463-48a9-83e0-3aabbcd1b249](https://github.com/Lavanyajoyce/NN-Project-Based-Experiment/assets/94170892/bb026eb0-533a-4d40-a066-9aeaf7b7c10a) <br>
-
-![327993085-ca28e703-3292-4115-b01d-78c742bb84a2](https://github.com/Lavanyajoyce/NN-Project-Based-Experiment/assets/94170892/b576e722-eddb-4eac-a7b1-86a802313f02)<br>
-
-# Result:
-Thus, a Multilayer Perceptron (MLP) to classify handwritten digits in python is build.
